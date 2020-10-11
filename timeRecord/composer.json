@@ -1,0 +1,22 @@
+{
+    "name": "thinkphp5/time-record",
+    "description": "A wrapper for Thinkphp time record.",
+    "keywords": ["time", "date"],
+    "homepage": "https://github.com/tcxuexi/timeRecord",
+    "type": "library",
+    "require": {
+        "php": ">=7.1.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "tcxuexi",
+            "email": "xuexi1998@163.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "TimeRecord\\Time\\": "src"
+        }
+    }
+}
