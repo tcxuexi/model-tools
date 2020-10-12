@@ -1,5 +1,5 @@
 {
-    "name": "thinkphp5/model-tools",
+    "name": "tp5/model-tools",
     "description": "An encapsulation of the Thinkphp5 model",
     "keywords": ["tp5", "model", "tools"],
     "homepage": "https://github.com/tcxuexi/model-tools",
