@@ -1,7 +1,7 @@
 # tp5-timeRecord
 对Thinkphp的模型的一个封装
 
-composer自动加载测试
+
 
 ## 使用
 
