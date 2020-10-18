@@ -259,6 +259,112 @@ trait ModelTrait
     }
 
     /**
+     * 友好时间显示
+     * @param $time
+     * @return string
+     */
+    public static function timeTran($time)
+    {
+        $t = time() - $time;
+        $f = array(
+            '31536000' => '年',
+            '2592000'  => '个月',
+            '604800'   => '星期',
+            '86400'    => '天',
+            '3600'     => '小时',
+            '60'       => '分钟',
+            '1'        => '秒',
+        );
+        foreach ($f as $k => $v) {
+            if (0 != $c = floor($t / (int)$k)) {
+                return $c.$v.'前';
+            }
+        }
+    }
+
+
+    /**
+     * 分级排序
+     * @param $data
+     * @param int $pid
+     * @param string $field
+     * @param string $pk
+     * @param string $html
+     * @param int $level
+     * @param bool $clear
+     * @return array
+     */
+    public static function sortListTier($data, $pid = 0, $field = 'pid', $pk = 'id', $html = '|-----', $level = 1, $clear = true)
+    {
+        static $list = [];
+        if ($clear) {
+            $list = [];
+        }
+        foreach ($data as $k => $res) {
+            if ($res[$field] == $pid) {
+                $res['html'] = str_repeat($html, $level);
+                $list[]      = $res;
+                unset($data[$k]);
+                self::sortListTier($data, $res[$pk], $field, $pk, $html, $level + 1, false);
+            }
+        }
+
+        return $list;
+    }
+
+    /**
+     * 身份证验证
+     * @param $card
+     * @return bool
+     */
+    public static function setCard($card)
+    {
+        $city  = [11 => "北京", 12 => "天津", 13 => "河北", 14 => "山西", 15 => "内蒙古", 21 => "辽宁", 22 => "吉林", 23 => "黑龙江 ", 31 => "上海", 32 => "江苏", 33 => "浙江", 34 => "安徽", 35 => "福建", 36 => "江西", 37 => "山东", 41 => "河南", 42 => "湖北 ", 43 => "湖南", 44 => "广东", 45 => "广西", 46 => "海南", 50 => "重庆", 51 => "四川", 52 => "贵州", 53 => "云南", 54 => "西藏 ", 61 => "陕西", 62 => "甘肃", 63 => "青海", 64 => "宁夏", 65 => "新疆", 71 => "台湾", 81 => "香港", 82 => "澳门", 91 => "国外 "];
+        $tip   = "";
+        $match = "/^\d{6}(18|19|20)?\d{2}(0[1-9]|1[012])(0[1-9]|[12]\d|3[01])\d{3}(\d|X)$/";
+        $pass  = true;
+        if (!$card || !preg_match($match, $card)) {
+            //身份证格式错误
+            $pass = false;
+        } else {
+            if (!$city[substr($card, 0, 2)]) {
+                //地址错误
+                $pass = false;
+            } else {
+                //18位身份证需要验证最后一位校验位
+                if (strlen($card) == 18) {
+                    $card = str_split($card);
+                    //∑(ai×Wi)(mod 11)
+                    //加权因子
+                    $factor = [7, 9, 10, 5, 8, 4, 2, 1, 6, 3, 7, 9, 10, 5, 8, 4, 2];
+                    //校验位
+                    $parity = [1, 0, 'X', 9, 8, 7, 6, 5, 4, 3, 2];
+                    $sum    = 0;
+                    $ai     = 0;
+                    $wi     = 0;
+                    for ($i = 0; $i < 17; $i++) {
+                        $ai  = $card[$i];
+                        $wi  = $factor[$i];
+                        $sum += $ai * $wi;
+                    }
+                    $last = $parity[$sum % 11];
+                    if ($parity[$sum % 11] != $card[17]) {
+//                        $tip = "校验位错误";
+                        $pass = false;
+                    }
+                } else {
+                    $pass = false;
+                }
+            }
+        }
+        if (!$pass) {
+            return false;
+        }/* 身份证格式错误*/
+
+        return true;/* 身份证格式正确*/
+    }
+
+    /**
      * 获取去除html去除空格去除软回车,软换行,转换过后的字符串
      * @param string $str
      * @return string
